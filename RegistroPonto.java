@@ -8,7 +8,7 @@ public class RegistroPonto {
         Scanner scanner = new Scanner(System.in);
 
         try {
-            Connection connection = Conexao.conectar();  // <<< Agora a conexão vem da sua classe externa
+            Connection connection = Conexao.conectar();
 
             System.out.print("Digite o ID do colaborador: ");
             int id_login = scanner.nextInt();
