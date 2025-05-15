@@ -1,37 +1,26 @@
 package ControleDePonto;
- 
+
 import java.sql.*;
 import java.util.Scanner;
- 
+
 public class RegistroPonto {
-		public static void main(String[] args) {
-			final String DRIVER = "com.mysql.cj.jdbc.Driver";
-			final String HOST = "localhost";
-			final int PORT = 3306;
-			final String DATABASE = "sistema_ponto";
-			final String URL = "jdbc:mysql://" + HOST +
-								":" + PORT +
-								"/" + DATABASE;
-			final String USER = "root";
-			final String PASSWORD = "";
- 
+    public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
- 
+
         try {
-            Class.forName(DRIVER);
-            Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
- 
+            Connection connection = Conexao.conectar();  // <<< Agora a conexão vem da sua classe externa
+
             System.out.print("Digite o ID do colaborador: ");
             int id_login = scanner.nextInt();
             scanner.nextLine();
- 
+
             System.out.println("Qual ponto deseja registrar?");
             System.out.println("1 - Entrada");
             System.out.println("2 - Saída para almoço");
             System.out.println("3 - Volta do almoço");
             System.out.println("4 - Saída final");
             int opcao = scanner.nextInt();
- 
+
             String coluna = null;
             switch (opcao) {
                 case 1: coluna = "hora_entrada"; break;
@@ -43,12 +32,12 @@ public class RegistroPonto {
                     connection.close();
                     return;
             }
- 
+
             String updateSql = "UPDATE ponto SET " + coluna + " = CURRENT_TIME() WHERE id_login = ? AND data_registro = CURDATE()";
             PreparedStatement updateStmt = connection.prepareStatement(updateSql);
             updateStmt.setInt(1, id_login);
             int rowsUpdated = updateStmt.executeUpdate();
- 
+
             if (rowsUpdated == 0) {
                 String insertSql = "INSERT INTO ponto (id_login, data_registro, " + coluna + ") VALUES (?, CURDATE(), CURRENT_TIME())";
                 PreparedStatement insertStmt = connection.prepareStatement(insertSql);
@@ -59,12 +48,10 @@ public class RegistroPonto {
             } else {
                 System.out.println("Ponto atualizado com sucesso!");
             }
- 
+
             updateStmt.close();
             connection.close();
- 
-        } catch (ClassNotFoundException e) {
-            System.out.println("Driver JDBC não encontrado!\n" + e.getMessage());
+
         } catch (SQLException e) {
             System.out.println("Erro ao acessar o banco de dados!\n" + e.getMessage());
         } finally {
@@ -72,5 +59,3 @@ public class RegistroPonto {
         }
     }
 }
- 
- 
